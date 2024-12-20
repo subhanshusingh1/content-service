@@ -141,96 +141,96 @@ export const featureNews = async (req, res) => {
 };
 
 // Get Featured News
-// export const getFeaturedNews = async (req, res) => {
-//   try {
-//     const featuredNews = await News.find({ featured: true }).limit(4); // You can adjust the number of featured news as needed
-
-//     if (!featuredNews || featuredNews.length === 0) {
-//       return res.status(404).json({ message: "No featured news found" });
-//     }
-
-//     // Sending back the featured news with title, description, and profile image (first image)
-//     const responseData = featuredNews.map((news) => ({
-//       id: news._id,
-//       title: news.title,
-//       description: news.description,
-//       reporter: news.reporterId?.name,
-//       imageSrc:
-//         news.profileImage.length > 0
-//           ? news.profileImage[0]
-//           : "https://via.placeholder.com/300x200", // Fallback image if no profileImage is available
-//     }));
-
-//     res.status(200).json(responseData);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 export const getFeaturedNews = async (req, res) => {
   try {
-    // Fetch featured news with a limit
-    const featuredNews = await News.find({ featured: true }).limit(5);
+    const featuredNews = await News.find({ featured: true }).limit(4); // You can adjust the number of featured news as needed
 
     if (!featuredNews || featuredNews.length === 0) {
       return res.status(404).json({ message: "No featured news found" });
     }
 
-    // Fetch reporter details for all featured news
-    const responseData = await Promise.all(
-      featuredNews.map(async (news) => {
-        let reporterName = "Unknown Reporter"; // Default value if no reporter details are available
+    // Sending back the featured news with title, description, and profile image (first image)
+    const responseData = featuredNews.map((news) => ({
+      id: news._id,
+      title: news.title,
+      description: news.description,
+      reporter: news.reporterId?.name,
+      imageSrc:
+        news.profileImage.length > 0
+          ? news.profileImage[0]
+          : "https://via.placeholder.com/300x200", // Fallback image if no profileImage is available
+    }));
 
-        // Determine which reporter ID to use (prefer reporterId if both exist)
-        const reporterId = news.reporterId || news.clerkUserId;
-
-        if (reporterId) {
-          try {
-            console.log(`Fetching reporter profile for ID: ${reporterId}`);
-
-            // Fetch reporter details
-            const reporterResponse = await axios.get(
-              `${authServiceBaseUrl}/api/v1/users/profile/${reporterId}`,
-              { timeout: 5000 }
-            );
-            reporterName = reporterResponse.data?.user?.name || reporterName;
-          } catch (reporterError) {
-            console.error(`Failed to fetch reporter for news ${news._id}:`, {
-              errorMessage: reporterError.message,
-              errorStack: reporterError.stack,
-            });
-          }
-        }
-
-        // Construct the response object
-        return {
-          id: news._id,
-          title: news.title,
-          description: news.description,
-          reporter: reporterName, // Fetched or fallback reporter name
-          date: news.date,
-          imageSrc:
-            news.profileImage.length > 0
-              ? news.profileImage[0]
-              : "https://via.placeholder.com/300x200", // Fallback image
-        };
-      })
-    );
-
-    // Send the processed response
     res.status(200).json(responseData);
   } catch (error) {
-    console.error("Error in getFeaturedNews:", {
-      errorMessage: error.message,
-      errorStack: error.stack,
-    });
-
-    res.status(500).json({
-      message: "Internal server error while fetching featured news",
-      errorDetails: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
+
+// export const getFeaturedNews = async (req, res) => {
+//   try {
+//     // Fetch featured news with a limit
+//     const featuredNews = await News.find({ featured: true }).limit(5);
+
+//     if (!featuredNews || featuredNews.length === 0) {
+//       return res.status(404).json({ message: "No featured news found" });
+//     }
+
+//     // Fetch reporter details for all featured news
+//     const responseData = await Promise.all(
+//       featuredNews.map(async (news) => {
+//         let reporterName = "Unknown Reporter"; // Default value if no reporter details are available
+
+//         // Determine which reporter ID to use (prefer reporterId if both exist)
+//         const reporterId = news.reporterId || news.clerkUserId;
+
+//         if (reporterId) {
+//           try {
+//             console.log(`Fetching reporter profile for ID: ${reporterId}`);
+
+//             // Fetch reporter details
+//             const reporterResponse = await axios.get(
+//               `${authServiceBaseUrl}/api/v1/users/profile/${reporterId}`,
+//               { timeout: 5000 }
+//             );
+//             reporterName = reporterResponse.data?.user?.name || reporterName;
+//           } catch (reporterError) {
+//             console.error(`Failed to fetch reporter for news ${news._id}:`, {
+//               errorMessage: reporterError.message,
+//               errorStack: reporterError.stack,
+//             });
+//           }
+//         }
+
+//         // Construct the response object
+//         return {
+//           id: news._id,
+//           title: news.title,
+//           description: news.description,
+//           reporter: reporterName, // Fetched or fallback reporter name
+//           date: news.date,
+//           imageSrc:
+//             news.profileImage.length > 0
+//               ? news.profileImage[0]
+//               : "https://via.placeholder.com/300x200", // Fallback image
+//         };
+//       })
+//     );
+
+//     // Send the processed response
+//     res.status(200).json(responseData);
+//   } catch (error) {
+//     console.error("Error in getFeaturedNews:", {
+//       errorMessage: error.message,
+//       errorStack: error.stack,
+//     });
+
+//     res.status(500).json({
+//       message: "Internal server error while fetching featured news",
+//       errorDetails: error.message,
+//     });
+//   }
+// };
 
 
 // Like a News
