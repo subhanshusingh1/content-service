@@ -1,6 +1,5 @@
 import News from "../models/News.js";
 import { clerkClient } from "@clerk/express";
-import redis from "../config/redisConfig.js";
 import axios from "axios";
 const authServiceBaseUrl = process.env.VITE_AUTH_SERVICE_BASE_URL; // Fetch from environment variables
 
